@@ -25,6 +25,8 @@ typedef struct {
   char region[40];
 }pokemon_dex;
 
+int identificacion = 0;
+
 const char *get_csv_field (char * tmp, int k) {
     int open_mark = 0;
     char* ret=(char*) malloc (100*sizeof(char));
@@ -64,7 +66,7 @@ const char *get_csv_field (char * tmp, int k) {
     return NULL;
 }
 
-void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,TreeMap *ArbolDex, TreeMap *ArbolPc, TreeMap *ArbolPs) {
+void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,TreeMap *ArbolDex, TreeMap *ArbolPc, TreeMap *ArbolPs, HashMap *MapaRegion) {
     FILE *fp = fopen ("pokemon Archivo1.csv", "r");
     char linea[1024];
     int i;
@@ -85,7 +87,8 @@ void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
             infodex->almacenados=1;
             aux = get_csv_field(linea, i);
             if(i==0) {
-              info->id=atoi(aux); 
+              identificacion++;
+              info->id=identificacion;
             }if(i==1) {
               strcpy(info->nombre, aux);
               strcpy(infodex->nombre, aux);
@@ -163,13 +166,36 @@ void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
         }else {
           push_back(searchTreeMap(ArbolPs,&info->ps),info);
         }
-
+        if(searchMap(MapaRegion,infodex->region)==NULL) {
+          ListaNombre=create_list();
+          push_back(ListaNombre, infodex);
+          insertMap(MapaRegion,infodex->region, ListaNombre);
+        }else {
+          push_back(searchMap(MapaRegion,infodex->region), infodex);
+        }
     }
-    infodex=firstMap(MapaNombreDex);//ATENCION
-    while(infodex!=NULL) { //ATENCION
+    infodex=firstMap(MapaNombreDex);
+    while(infodex!=NULL) { 
       insertTreeMap(ArbolDex,&infodex->numero, infodex);
-      infodex=nextMap(MapaNombreDex); //ATENCION
+      infodex=nextMap(MapaNombreDex); 
     }
+    
+    ListaNombre=firstMap(MapaNombreDex);
+    while(ListaNombre!=NULL) {
+      infodex=first(ListaNombre);
+      while(infodex!=NULL) {
+        if(searchMap(MapaRegion,infodex->region)==NULL) {
+          ListaNombre=create_list();
+          push_back(ListaNombre, infodex);
+          insertMap(MapaRegion,infodex->region, ListaNombre);
+        }else {
+          push_back(searchMap(MapaRegion,infodex->region), infodex);
+        }
+        next(ListaNombre);
+      }
+      nextMap(MapaNombreDex);
+    }
+
     ListaNombre=firstMap(MapaNombre);
     pokemon *iterador;
     while(ListaNombre!=NULL) {
@@ -221,7 +247,7 @@ void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     }
 }
 
-void opcion_2(HashMap *MapaNombre){
+void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,TreeMap *ArbolDex, TreeMap *ArbolPc, TreeMap *ArbolPs){
     char nombre[40];
     int n;
     char tipos[2][40];
@@ -248,7 +274,7 @@ void opcion_2(HashMap *MapaNombre){
         scanf("%s", tipos[1]);
         strcpy(dex->tipos[1], tipos[1]);
     }
-    printf("Ingrese PC\n");
+    printf("Ingrese PC\n");  //Se guardan los datos del pokemon
     scanf("%d", &PC);
     pkm->pc = PC;
     printf("Ingrese PS\n");
@@ -269,7 +295,8 @@ void opcion_2(HashMap *MapaNombre){
     printf("Ingrese region\n");
     scanf("%s", region);
     strcpy(dex->region, region);
-    
+    identificacion++;
+    pkm->id=identificacion;
     if (searchMap(MapaNombre, nombre) == NULL) {
         List *L = create_list();
         push_back(L, pkm);
@@ -278,6 +305,7 @@ void opcion_2(HashMap *MapaNombre){
     else {
         push_back(searchMap(MapaNombre,pkm->nombre), pkm);
     }
+    
 }
 
 void opcion_3(HashMap *MapaTipo){
@@ -401,5 +429,31 @@ void opcion_8(TreeMap *ArbolPs) {
     L = nextTreeMap(ArbolPs);
   }
 }
-void opcion_9 (HashMap* MapaNombre,HashMap* MapaNombreDex, HashMap* MapaTipo,TreeMap* ArbolDex ){    
+void opcion_9 (HashMap *MapaNombre,HashMap *MapaNombreDex, HashMap *MapaTipo,TreeMap *ArbolDex, TreeMap *ArbolPs, TreeMap *ArbolPc, int id){
+    printf("Ingrese el ID del pokemon que quiere eliminar");
+    scanf("%d", &id);
+    if (searchMap(MapaNombre,pokemon->id) == id){
+      
+    }    
+}
+
+void opcion_10(HashMap *MapaNombreRegion){
+    char region[40];
+    int total;
+    scanf("%s", region);
+    List *L=searchMap(MapaNombreRegion, region);
+    if(L == NULL) {
+        printf(" No se encontro \n");
+        return;
+    }
+    pokemon *iterador = first(L);
+    while (iterador != NULL) {
+        printf("%d ",iterador->id);
+        printf("%s ",iterador->nombre);
+        printf("%d ",iterador->pc);
+        printf("%d ",iterador->ps);
+        printf("%s ",iterador->sexo);
+        printf("\n");
+        iterador = next(L);
+    }
 }
