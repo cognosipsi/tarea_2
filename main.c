@@ -30,9 +30,10 @@ int higher_than_int(void* key1, void* key2){
 }
 int main (void) {
   int op;
-  HashMap *MapaNombre=createMap(300);
-  HashMap *MapaTipo=createMap(300);
-  HashMap *MapaNombreDex=createMap(300);
+  HashMap *MapaNombre=createMap(100);
+  HashMap *MapaTipo=createMap(100);
+  HashMap *MapaNombreDex=createMap(100);
+  HashMap *MapaRegion=createMap(100);
   TreeMap *ArbolDex=createTreeMap(lower_than_int);
   TreeMap *ArbolPc=createTreeMap(higher_than_int);
   TreeMap *ArbolPs=createTreeMap(higher_than_int);
@@ -52,10 +53,10 @@ int main (void) {
         printf("Indica la opcion: ");
         scanf("%d", &op);
       if (op == 1) {
-          opcion_1(MapaNombre,MapaNombreDex, MapaTipo,ArbolDex,ArbolPc,ArbolPs); 
+          opcion_1(MapaNombre,MapaNombreDex, MapaTipo,ArbolDex,ArbolPc,ArbolPs,MapaRegion); 
       }
       if (op == 2) {
-          opcion_2(MapaNombre); 
+          opcion_2(MapaNombre,MapaNombreDex,MapaTipo,ArbolDex, ArbolPc, ArbolPs); 
       }
       if (op == 3) {
           opcion_3(MapaTipo);
@@ -77,6 +78,9 @@ int main (void) {
       }
       if (op == 9) {
           opcion_9(MapaNombre,MapaNombreDex,MapaTipo,ArbolDex);
+      }
+      if (op == 10) {
+          opcion_10(MapaRegion);
       }
   }
   return 0;
