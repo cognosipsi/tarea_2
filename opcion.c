@@ -80,25 +80,23 @@ void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     int l;
     int k=0;
     char region[40];
-    int a;
     pokemon *info;
     pokemon_dex *infodex,*comprobardex;
     const char *aux;
     char *tmp;
     List *ListaNombre;
     fgets (linea, 1023, fp);
-    while (fgets (linea, 1023, fp) != NULL) {
+    while (fgets (linea, 1023, fp) != NULL) { //cada ciclo es una linea del csv 
         info=(pokemon*)malloc(sizeof(pokemon));
         infodex=(pokemon_dex*)malloc(sizeof(pokemon_dex));
         j=0;
         l=0;
-        a=0;
         for(i=0;i<10;i++){
             infodex->almacenados=1;
             tmp = strdup(linea);
             aux = get_csv_field(tmp, i);
             free(tmp);
-            if(i==0) {
+            if(i==0) {//en cada una de las condiciones dependientes del valor de i se copia los valores del nuevo pokemon
               identificacion++;
               info->id=identificacion;
             }if(i==1) {
@@ -132,15 +130,10 @@ void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
             }if(i==8) {
               infodex->numero=atoi(aux); 
             }if(i==9) {
-              /*while(isalpha(aux[a])!=0) {
-                infodex->region[a]=aux[a];
-                a++;
-              }
-              infodex->region[a+1]='\0';*/
               strcpy(infodex->region,aux);
             }
         }
-        if(searchMap(MapaNombre,info->nombre)==NULL) {
+        if(searchMap(MapaNombre,info->nombre)==NULL) { //Si la condicion se cumple significa que es el primer pokemon con este nombre. Todos los mapas usan el mismo procedimiento
           ListaNombre=create_list();
           push_back(ListaNombre, info);
           insertMap(MapaNombre,info->nombre, ListaNombre);
@@ -202,87 +195,22 @@ void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
       infodex=nextMap(MapaNombreDex);
     }
     ListaNombre=firstMap(MapaRegion);
-    while(ListaNombre!=NULL) {
-      first(ListaNombre);
-      infodex = first(ListaNombre);
-      while (infodex != NULL) {
-        printf(" %s ",infodex->nombre);
-        printf("%d ",infodex->almacenados);
-        printf("%s ", infodex->tipos[0]);
-        if(infodex->tipos[1] != NULL){
-          printf("%s ",infodex->tipos[1]);
-        }
-        printf("%s ",infodex->previa);
-        printf("%s ",infodex->posterior);
-        printf("%d ",infodex->numero);
-        printf("%s ",infodex->region);
-        printf("\n");
-        infodex = next(ListaNombre);
-      }
-      ListaNombre=nextMap(MapaRegion);
-    }
 
-    ListaNombre=firstMap(MapaNombre);
-    pokemon *iterador;
-    while(ListaNombre!=NULL) {
-      iterador=(pokemon*)malloc(sizeof(pokemon));
-      iterador = first(ListaNombre);
-      while (iterador != NULL) {
-        printf("%d ",iterador->id);
-        printf("%s ",iterador->nombre);
-        printf("%d ",iterador->pc);
-        printf("%d ",iterador->ps);
-        printf("%s ",iterador->sexo);
-        printf("\n");
-        iterador = next(ListaNombre);
-      }
-      ListaNombre=nextMap(MapaNombre);
-    }
-    ListaNombre=firstMap(MapaTipo);
-    while(ListaNombre!=NULL) {
-      first(ListaNombre);
-      iterador=(pokemon*)malloc(sizeof(pokemon));
-      iterador = first(ListaNombre);
-      while (iterador != NULL) {
-        printf("%d ",iterador->id);
-        printf("%s ",iterador->nombre);
-        printf("%d ",iterador->pc);
-        printf("%d ",iterador->ps);
-        printf("%s ",iterador->sexo);
-        printf("\n");
-        iterador = next(ListaNombre);
-      }
-      ListaNombre=nextMap(MapaTipo);
-    }
-    pokemon_dex *iterador2=(pokemon_dex*)malloc(sizeof(pokemon_dex));
-    iterador2=firstMap(MapaNombreDex);
-    while(iterador2!=NULL) {
-        printf(" %s ",iterador2->nombre);
-        printf("%d ",iterador2->almacenados);
-        printf("%s ",iterador2->tipos[0]);
-        if(iterador2->tipos[1]!=NULL){
-          printf("%s ",iterador2->tipos[1]);
-        }
-        printf("%s ",iterador2->previa);
-        printf("%s ",iterador2->posterior);
-        printf("%d ",iterador2->numero);
-        printf("%s ",iterador2->region);
-        printf("\n");
-        iterador2=nextMap(MapaNombreDex);
-    }
 }
 
 void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,TreeMap *ArbolDex, TreeMap *ArbolPc, TreeMap *ArbolPs, HashMap *MapaRegion){
-    char nombre[40];
+    char *nombre = (char *) malloc (40 * sizeof(char));
     int n;
-    char tipos[2][40];
+    List *tipos = create_list();
+    char *tipo;
     int PC;
     int PS;
-    char sexo[10];
-    char previa[40];
-    char posterior[40];
+    char *sexo = (char *) malloc (10 * sizeof(char));
+    char *previa = (char *) malloc (40 * sizeof(char));
+    char *posterior = (char *) malloc (40 * sizeof(char));
     int numero;
-    char region[40];
+    char *region = (char *) malloc (40 * sizeof(char));
+    int i;
     List *L;
     pokemon_dex *comprobardex;
     pokemon *pkm = (pokemon *) malloc(sizeof(pokemon));
@@ -292,48 +220,55 @@ void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     pkm->id=identificacion;
 
     printf("Ingrese nombre\n");
-    scanf("%s", nombre);
+    scanf("%[^\n]s", nombre);
     strcpy(pkm->nombre, nombre);
     strcpy(dex->nombre, nombre);
+    fflush(stdin);
 
     printf("Ingrese cantidad de tipos\n");
     scanf("%d", &n);
-    printf("Ingrese un tipo\n");
-    scanf("%s", tipos[0]);
-    strcpy(dex->tipos[0], tipos[0]);
 
-    if (n == 2) {
+    for (i = 0 ; i < n ; i++) {
+        tipo = (char *) malloc (40 * sizeof(char));
         printf("Ingrese un tipo\n");
-        scanf("%s", tipos[1]);
-        strcpy(dex->tipos[1], tipos[1]);
+        scanf("%[^\n]s", tipo);
+        fflush(stdin);
+        push_back(tipos, tipo);
     }
     
     printf("Ingrese PC\n");  //Se guardan los datos del pokemon
     scanf("%d", &PC);
+    fflush(stdin);
     pkm->pc = PC;
 
     printf("Ingrese PS\n");
     scanf("%d", &PS);
+    fflush(stdin);
     pkm->ps = PS;
 
     printf("Ingrese sexo\n");
-    scanf("%s", sexo);
+    scanf("%[^\n]s", sexo);
+    fflush(stdin);
     strcpy(pkm->sexo, sexo);
     
     printf("Ingrese evolucion previa\n");
-    scanf("%s", previa);
+    scanf("%[^\n]s", previa);
+    fflush(stdin);
     strcpy(dex->previa, previa);
     
     printf("Ingrese evolucion posterior\n");
-    scanf("%s", posterior);
+    scanf("%[^\n]s", posterior);
+    fflush(stdin);
     strcpy(dex->posterior, posterior);
 
     printf("Ingrese numero de la pokedex\n");
     scanf("%d", &numero);
+    fflush(stdin);
     dex->numero = numero;
     
     printf("Ingrese region\n");
-    scanf("%s", region);
+    scanf("%[^\n]s", region);
+    fflush(stdin);
     strcpy(dex->region, region);
     
     if (searchMap(MapaNombre, nombre) == NULL) {
@@ -410,16 +345,16 @@ void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     }
 }
 
-void opcion_3(HashMap *MapaTipo){
+void opcion_3(HashMap *MapaTipo){//busca pokemones de tipo especifico
     char tipo[40];
     scanf("%s", tipo);
-    List *L=searchMap(MapaTipo, tipo);
+    List *L=searchMap(MapaTipo, tipo);//se busca si el tipo existe
     if(L == NULL) {
         printf(" No se encontro \n");
         return;
     }
     pokemon *iterador = first(L);
-    while (iterador != NULL) {
+    while (iterador != NULL) { //cada ciclo es un pokemon del mismo tipo
         printf("%d ",iterador->id);
         printf("%s ",iterador->nombre);
         printf("%d ",iterador->pc);
@@ -430,16 +365,16 @@ void opcion_3(HashMap *MapaTipo){
     }
 } 
 
-void opcion_4(HashMap *MapaNombre){
+void opcion_4(HashMap *MapaNombre){//busca pokemones de nombre especifico
     char nombre[40];
     scanf("%s", nombre);
-    List *L=searchMap(MapaNombre, nombre);
+    List *L=searchMap(MapaNombre, nombre); //se busca si el nombre existe
     if(L == NULL) {
         printf(" No se encontro \n");
         return;
     }
     pokemon *iterador = first(L);
-    while (iterador != NULL) {
+    while (iterador != NULL) { //cada ciclo es un pokemon del mismo nombre
         printf("%d ",iterador->id);
         printf("%s ",iterador->nombre);
         printf("%d ",iterador->pc);
@@ -450,13 +385,13 @@ void opcion_4(HashMap *MapaNombre){
     }
 }
 
-void opcion_5(HashMap *MapaNombreDex){
+void opcion_5(HashMap *MapaNombreDex){//busca pokemones de nombre especifico
     char nombre[40];
     pokemon_dex *dex_ite=(pokemon_dex*)malloc(sizeof(pokemon_dex));
-    dex_ite = firstMap(MapaNombreDex);
+    dex_ite = firstMap(MapaNombreDex); 
     bool no_exist = true;
     printf("Ingrese el nombre \n");
-    scanf("%s", nombre); //preguntar al profe
+    scanf("%s", nombre);
     while (dex_ite != NULL){
         if(strcmp(dex_ite->nombre, nombre) == 0){
           printf("%s ", dex_ite->nombre);
@@ -479,10 +414,10 @@ void opcion_5(HashMap *MapaNombreDex){
     }
 }
 
-void opcion_6 (TreeMap *ArbolDex) {
+void opcion_6 (TreeMap *ArbolDex) {//imprime todos los pokemon por orden de pokedex
   pokemon_dex *dex_ite=(pokemon_dex*)malloc(sizeof(pokemon_dex));
   dex_ite=firstTreeMap(ArbolDex);    
-  while (dex_ite != NULL){
+  while (dex_ite != NULL){//cada ciclo es un pokemon a imprimir
       printf("%s ", dex_ite->nombre);
       printf("%s ", dex_ite->tipos[0]);
       if(dex_ite->tipos[1] != NULL){
@@ -497,9 +432,9 @@ void opcion_6 (TreeMap *ArbolDex) {
       dex_ite = nextTreeMap(ArbolDex);
   }
 }
-void opcion_7(TreeMap *ArbolPc){
+void opcion_7(TreeMap *ArbolPc){//imprime todos los pokemon por orden de pc
   pokemon *iterador=(pokemon*)malloc(sizeof(pokemon));
-  List *L = firstTreeMap(ArbolPc);
+  List *L = firstTreeMap(ArbolPc); //son listas en caso de que repitan pc
   while (L != NULL) {
     iterador=first(L);
     while(iterador != NULL) {
@@ -514,9 +449,9 @@ void opcion_7(TreeMap *ArbolPc){
     L = nextTreeMap(ArbolPc);
   }
 }
-void opcion_8(TreeMap *ArbolPs) {
+void opcion_8(TreeMap *ArbolPs) {//imprime todos los pokemon por orden de ps
   pokemon *iterador=(pokemon*)malloc(sizeof(pokemon));
-  List *L = firstTreeMap(ArbolPs);
+  List *L = firstTreeMap(ArbolPs);//son listas en caso de que repitan ps
   while (L != NULL) {
     iterador=first(L);
     while(iterador != NULL) {
@@ -535,21 +470,19 @@ void opcion_9 (HashMap *MapaNombre,HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     List *L;
     int pc;
     int ps;
-    int comprobar=0;
+    int comprobar=0; //variable que se usa como booleano
     L=firstMap(MapaNombre);
     pokemon *iterador=(pokemon*)malloc(sizeof(pokemon));
-    pokemon *guardado=(pokemon*)malloc(sizeof(pokemon));
     char nombre[40];
     pokemon_dex *iterador2=(pokemon_dex*)malloc(sizeof(pokemon_dex));
     pokemon_dex *guardado2=(pokemon_dex*)malloc(sizeof(pokemon_dex));
-    while(L!=NULL) {
+    while(L!=NULL) { //como no hay mapa con id como llave se tiene que buscar uno por uno
       iterador=(pokemon*)malloc(sizeof(pokemon));
       iterador = first(L);
       while (iterador != NULL) {
-        if(iterador->id==id) {
+        if(iterador->id==id) {//id encontrado
           comprobar=1;
           pop_current(searchMap(MapaNombre,iterador->nombre));
-          guardado=iterador;
           strcpy(nombre,iterador->nombre);
           pc=iterador->pc;
           ps=iterador->ps;
@@ -563,12 +496,13 @@ void opcion_9 (HashMap *MapaNombre,HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
       if(comprobar==1) break;
       L=nextMap(MapaNombre);
     }
-    if(comprobar==1) {
-      iterador2=searchMap(MapaNombreDex,iterador->nombre);
+    if(comprobar==1) { //solo se buscara para eliminar en el resto de los mapas si se encontro en MapaNombre
+      iterador2=searchMap(MapaNombreDex,iterador->nombre);// se busca para disminuir en uno la existencia en la pokedex
       iterador2->almacenados--;
       guardado2=iterador2;
       iterador2=(pokemon_dex*)malloc(sizeof(pokemon_dex));
       iterador=(pokemon*)malloc(sizeof(pokemon));
+      //Desde aqui hacia abajo se usa el mismo metodo para eliminar que en MapaNombre
       L=searchMap(MapaTipo,guardado2->tipos[0]);
       iterador=first(L);
       while(iterador!=NULL) {
@@ -596,7 +530,6 @@ void opcion_9 (HashMap *MapaNombre,HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
         }        
       }
       iterador2=searchTreeMap(ArbolDex,&guardado2->numero);
-      //iterador2->almacenados--;
       iterador2=(pokemon_dex*)malloc(sizeof(pokemon_dex));
       L=searchTreeMap(ArbolPc,&pc);
       iterador=first(L);
@@ -623,21 +556,7 @@ void opcion_9 (HashMap *MapaNombre,HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
         }
         iterador=next(L);
       }      
-      /*L=searchMap(MapaRegion,guardado2->region);
-      iterador2=first(L);
-      while(iterador2!=NULL) {
-        if(guardado2->numero==iterador2->numero) {
-          pop_current(L);
-          if(listCount(searchMap(MapaRegion,guardado2->region))==0){
-            eraseMap(MapaRegion,guardado2->region);
-          }
-          break;
-        }
-        iterador2=next(L);
-      }
-      int a;
-      return;*/            
-    }else {
+    }else {//solo si comprobar==0
       printf("Ese id no se encuentra");
     }
 }
@@ -649,28 +568,28 @@ void opcion_10(HashMap *MapaRegion){
     int a=0;
     printf("Escribe la region \n");
     scanf("%s",region);
-    List *L;//=searchMap(MapaRegion, region);
+    List *L;
     L=firstMap(MapaRegion);
-    while(L!=NULL) {
+    while(L!=NULL) { //debido a que por alguna razon se copian caracteres invisibles en la parte de region hay que comparar caracter por caracter.
       a=0;
       aux=first(L);
       while(isalpha(region[a])!=0) {
-        if(aux->region[a]!=region[a]) {
+        if(aux->region[a]!=region[a]) { //si los caracteres son distintos se pasa al siguiente elemento del mapa
           break;
         }else a++;
       }
-      if(isalpha(region[a])==0) {
+      if(isalpha(region[a])==0) { //esta condicion se cumple solo si paso por cada una de las letras de la palabre
         break;
       } 
       L=nextMap(MapaRegion);
     }
     pokemon_dex *iterador =(pokemon_dex*)malloc(sizeof(pokemon_dex));
-    if(isalpha(region[a])!=0) {
+    if(isalpha(region[a])!=0) { //esto solo se cumple si paso por todos los elementos del mapa y no hubo concidencias
         printf("No existe ningun pokemon de la region %s\n",region);
         return;
     }
     iterador = first(L);
-    while (iterador!=NULL) {
+    while (iterador!=NULL) { //se imprimen los datos de pokedex de cada pokemon de la region buscada
         printf(" %s ",iterador->nombre);
         printf("%d ",iterador->almacenados);
         printf("%s ", iterador->tipos[0]);
@@ -682,7 +601,7 @@ void opcion_10(HashMap *MapaRegion){
         printf("%d ",iterador->numero);
         printf("%s ",iterador->region);
         printf("\n");
-        total=total+iterador->almacenados;
+        total=total+iterador->almacenados; //se cuentan la cantidad total de pokemones almacenados de la region
         iterador = next(L);       
     }
     printf("Pokemons totales de la region %s: %d\n",region,total);
