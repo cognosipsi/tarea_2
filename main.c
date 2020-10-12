@@ -50,13 +50,13 @@ int main (void) {
         printf("9.- Liberar pokémon\n");
         printf("10.- Mostrar pokémon por región\n");
         printf("11.- Salir\n");
-        printf("Indica la opcion: ");
+        printf("\nIndica la opcion: ");
         scanf("%d", &op);
       if (op == 1) {
           opcion_1(MapaNombre,MapaNombreDex, MapaTipo,ArbolDex,ArbolPc,ArbolPs,MapaRegion); 
       }
       if (op == 2) {
-          opcion_2(MapaNombre,MapaNombreDex,MapaTipo,ArbolDex, ArbolPc, ArbolPs); 
+          opcion_2(MapaNombre,MapaNombreDex,MapaTipo,ArbolDex, ArbolPc, ArbolPs, MapaRegion); 
       }
       if (op == 3) {
           opcion_3(MapaTipo);
@@ -77,7 +77,7 @@ int main (void) {
           opcion_8(ArbolPs);
       }
       if (op == 9) {
-          opcion_9(MapaNombre,MapaNombreDex,MapaTipo,ArbolDex);
+          //opcion_9(MapaNombre,MapaNombreDex,MapaTipo,ArbolDex);
       }
       if (op == 10) {
           opcion_10(MapaRegion);
