@@ -30,6 +30,7 @@ int higher_than_int(void* key1, void* key2){
 }
 int main (void) {
   int op;
+  int id;
   HashMap *MapaNombre=createMap(100);
   HashMap *MapaTipo=createMap(100);
   HashMap *MapaNombreDex=createMap(100);
@@ -77,7 +78,9 @@ int main (void) {
           opcion_8(ArbolPs);
       }
       if (op == 9) {
-          //opcion_9(MapaNombre,MapaNombreDex,MapaTipo,ArbolDex);
+          printf("escriba id a borrar\n");
+          scanf("%d",&id);
+          opcion_9 (MapaNombre,MapaNombreDex,MapaTipo,ArbolDex, ArbolPs,ArbolPc,MapaRegion,id);
       }
       if (op == 10) {
           opcion_10(MapaRegion);

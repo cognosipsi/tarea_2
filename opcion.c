@@ -283,14 +283,18 @@ void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     char posterior[40];
     int numero;
     char region[40];
-    List *ListaNombre;
+    List *L;
     pokemon_dex *comprobardex;
     pokemon *pkm = (pokemon *) malloc(sizeof(pokemon));
     pokemon_dex *dex = (pokemon_dex *) malloc(sizeof(pokemon_dex));
 
+    identificacion++;
+    pkm->id=identificacion;
+
     printf("Ingrese nombre\n");
     scanf("%s", nombre);
     strcpy(pkm->nombre, nombre);
+    strcpy(dex->nombre, nombre);
 
     printf("Ingrese cantidad de tipos\n");
     scanf("%d", &n);
@@ -332,39 +336,28 @@ void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     scanf("%s", region);
     strcpy(dex->region, region);
     
-    identificacion++;
-    pkm->id=identificacion;
     if (searchMap(MapaNombre, nombre) == NULL) {
-        List *L = create_list();
+        L = create_list();
         push_back(L, pkm);
-        insertMap(MapaNombre,pkm->nombre, L);
+        insertMap(MapaNombre, pkm->nombre, L);
     }
     else {
         push_back(searchMap(MapaNombre,pkm->nombre), pkm);
     }
-    
-    if (searchMap(MapaNombre,pkm->nombre) == NULL) {
-        ListaNombre = create_list();
-        push_back(ListaNombre, pkm);
-        insertMap(MapaNombre, pkm->nombre, ListaNombre);
-    }
-    else {
-        push_back(searchMap(MapaNombre, pkm->nombre), pkm);
-    }
 
     if (searchMap(MapaTipo, dex->tipos[0]) == NULL) {
-        ListaNombre = create_list();
-        push_back(ListaNombre, pkm);
-        insertMap(MapaTipo, dex->tipos[0], ListaNombre);  
+        L = create_list();
+        push_back(L, pkm);
+        insertMap(MapaTipo, dex->tipos[0], L);  
     }
     else {
         push_back(searchMap(MapaTipo, dex->tipos[0]), pkm);
     }
 
     if (searchMap(MapaTipo, dex->tipos[1]) == NULL) {
-        ListaNombre = create_list();
-        push_back(ListaNombre, pkm);
-        insertMap(MapaTipo, dex->tipos[1], ListaNombre);  
+        L = create_list();
+        push_back(L, pkm);
+        insertMap(MapaTipo, dex->tipos[1], L);  
     }
     else {
         push_back(searchMap(MapaTipo, dex->tipos[1]), pkm);
@@ -374,37 +367,28 @@ void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     comprobardex = searchMap(MapaNombreDex, dex->nombre);
     if (comprobardex == NULL) {
         insertMap(MapaNombreDex, dex->nombre, dex);
+        dex->almacenados = 1;
     }
     else {
         comprobardex->almacenados++;
     }
 
     if (searchTreeMap(ArbolPc, &pkm->pc) == NULL) {
-        ListaNombre = create_list();
-        push_back(ListaNombre, pkm);
-        insertTreeMap(ArbolPc, &pkm->pc, ListaNombre);
+        L = create_list();
+        push_back(L, pkm);
+        insertTreeMap(ArbolPc, &pkm->pc, L);
     }
     else {
         push_back(searchTreeMap(ArbolPc, &pkm->pc), pkm);
     }
 
     if (searchTreeMap(ArbolPs, &pkm->ps) == NULL) {
-        ListaNombre = create_list();
-        push_back(ListaNombre, pkm);
-        insertTreeMap(ArbolPs, &pkm->ps, ListaNombre);
+        L = create_list();
+        push_back(L, pkm);
+        insertTreeMap(ArbolPs, &pkm->ps, L);
     }
     else {
         push_back(searchTreeMap(ArbolPs, &pkm->ps), pkm);
-    }
-
-    
-    if (searchMap(MapaNombre, pkm->nombre) == NULL) {
-      ListaNombre = create_list();
-      push_back(ListaNombre, pkm);
-      insertMap(MapaNombre, pkm->nombre, ListaNombre);
-    }
-    else {
-      push_back(searchMap(MapaNombre, pkm->nombre), pkm);
     }
     
     dex = firstMap(MapaNombreDex);//ATENCION
@@ -416,42 +400,13 @@ void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     dex = firstMap(MapaNombreDex);
     while(dex != NULL) {
       if (searchMap(MapaRegion, dex->region) == NULL) {
-        ListaNombre = create_list();
-        push_back(ListaNombre, dex);
-        insertMap(MapaRegion, dex->region, ListaNombre);
+        L = create_list();
+        push_back(L, dex);
+        insertMap(MapaRegion, dex->region, L);
       }else {
         push_back(searchMap(MapaRegion, dex->region), dex);
       }
       dex = nextMap(MapaNombreDex);
-    }
-
-    ListaNombre = firstMap(MapaNombre);
-    pokemon *iterador;
-    while (ListaNombre != NULL) {
-      first(ListaNombre);
-      iterador = (pokemon*)malloc(sizeof(pokemon));
-      iterador = first(ListaNombre);
-      while (iterador != NULL) {
-        iterador = next(ListaNombre);
-      }
-      ListaNombre = nextMap(MapaNombre);
-    }
-
-    ListaNombre = firstMap(MapaTipo);
-    while (ListaNombre != NULL) {
-      first(ListaNombre);
-      iterador = (pokemon*)malloc(sizeof(pokemon));
-      iterador = first(ListaNombre);
-      while (iterador != NULL) {
-        iterador = next(ListaNombre);
-      }
-      ListaNombre = nextMap(MapaTipo);
-    }
-
-    pokemon_dex *iterador2 = (pokemon_dex*)malloc(sizeof(pokemon_dex));
-    iterador2 = firstMap(MapaNombreDex);
-    while (iterador2!=NULL) {
-        iterador2 = nextMap(MapaNombreDex);
     }
 }
 
@@ -578,11 +533,15 @@ void opcion_8(TreeMap *ArbolPs) {
 }
 void opcion_9 (HashMap *MapaNombre,HashMap *MapaNombreDex, HashMap *MapaTipo,TreeMap *ArbolDex, TreeMap *ArbolPs, TreeMap *ArbolPc,HashMap *MapaRegion, int id){
     List *L;
+    int pc;
+    int ps;
     int comprobar=0;
     L=firstMap(MapaNombre);
     pokemon *iterador=(pokemon*)malloc(sizeof(pokemon));
+    pokemon *guardado=(pokemon*)malloc(sizeof(pokemon));
     char nombre[40];
     pokemon_dex *iterador2=(pokemon_dex*)malloc(sizeof(pokemon_dex));
+    pokemon_dex *guardado2=(pokemon_dex*)malloc(sizeof(pokemon_dex));
     while(L!=NULL) {
       iterador=(pokemon*)malloc(sizeof(pokemon));
       iterador = first(L);
@@ -590,7 +549,11 @@ void opcion_9 (HashMap *MapaNombre,HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
         if(iterador->id==id) {
           comprobar=1;
           pop_current(searchMap(MapaNombre,iterador->nombre));
-          if(size(searchMap(MapaNombre,iterador->nombre))==0){
+          guardado=iterador;
+          strcpy(nombre,iterador->nombre);
+          pc=iterador->pc;
+          ps=iterador->ps;
+          if(listCount(searchMap(MapaNombre,iterador->nombre))==0){
             eraseMap(MapaNombre,iterador->nombre);
           }
           break;
@@ -603,77 +566,83 @@ void opcion_9 (HashMap *MapaNombre,HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     if(comprobar==1) {
       iterador2=searchMap(MapaNombreDex,iterador->nombre);
       iterador2->almacenados--;
+      guardado2=iterador2;
       iterador2=(pokemon_dex*)malloc(sizeof(pokemon_dex));
-      strcpy(nombre,iterador->nombre);
       iterador=(pokemon*)malloc(sizeof(pokemon));
-      L=searchMap(MapaTipo,iterador2->tipos[0]);
+      L=searchMap(MapaTipo,guardado2->tipos[0]);
       iterador=first(L);
-      while(L!=NULL) {
+      while(iterador!=NULL) {
         if(id==iterador->id) {
           pop_current(L);
-          if(size(searchMap(MapaTipo,iterador2->tipos[0]))==0){
-            eraseMap(MapaTipo,iterador2->tipos[0]);
+          if(listCount(searchMap(MapaTipo,guardado2->tipos[0]))==0){
+            eraseMap(MapaTipo,guardado2->tipos[0]);
           }
+          break;
         }
         iterador=next(L);
       }
-      if(iterador2->tipos[1]!=NULL) {
-        L=searchMap(MapaTipo,iterador2->tipos[1]);
+      if(guardado2->tipos[1]!=NULL) {
+        L=searchMap(MapaTipo,guardado2->tipos[1]);
         iterador=first(L);
-        while(L!=NULL) {
+        while(iterador!=NULL) {
           if(id==iterador->id) {
             pop_current(L);
-            if(size(searchMap(MapaTipo,iterador2->tipos[1]))==0){
-              eraseMap(MapaTipo,iterador2->tipos[1]);
+            if(listCount(searchMap(MapaTipo,guardado2->tipos[1]))==0){
+              eraseMap(MapaTipo,guardado2->tipos[1]);
             }
+            break;
           }
           iterador=next(L);
         }        
       }
-      L=searchMap(MapaRegion,iterador2->region);
-      iterador2=first(L);
-      while(L!=NULL) {
+      iterador2=searchTreeMap(ArbolDex,&guardado2->numero);
+      //iterador2->almacenados--;
+      iterador2=(pokemon_dex*)malloc(sizeof(pokemon_dex));
+      L=searchTreeMap(ArbolPc,&pc);
+      iterador=first(L);
+      while(iterador!=NULL) {
+        printf("hola");
         if(id==iterador->id) {
           pop_current(L);
-          if(size(searchMap(MapaTipo,iterador2->tipos[0]))==0){
-            eraseMap(MapaTipo,iterador2->tipos[0]);
+          if(listCount(searchTreeMap(ArbolPc,&pc))==0){
+            eraseTreeMap(ArbolPc,&pc);
           }
+          break;
+        }
+        iterador=next(L);
+      }
+      L=searchTreeMap(ArbolPs,&ps);
+      iterador=first(L);
+      while(iterador!=NULL) {
+        if(id==iterador->id) {
+          pop_current(L);
+          if(listCount(searchTreeMap(ArbolPs,&ps))==0){
+            eraseTreeMap(ArbolPs,&ps);
+          }
+          break;
         }
         iterador=next(L);
       }      
+      /*L=searchMap(MapaRegion,guardado2->region);
+      iterador2=first(L);
+      while(iterador2!=NULL) {
+        if(guardado2->numero==iterador2->numero) {
+          pop_current(L);
+          if(listCount(searchMap(MapaTipo,iterador2->tipos[0]))==0){
+            eraseMap(MapaTipo,iterador2->tipos[0]);
+          }
+          break;
+        }
+        iterador2=next(L);
+      }*/
+      int a;
+      return;            
     }else {
       printf("Ese id no se encuentra");
     }
 }
 
 void opcion_10(HashMap *MapaRegion){
-    /*char region[40];
-    int total=0;
-    printf("Escribe la region \n");
-    scanf("%s",region);
-    List *L=searchMap(MapaRegion, region);
-    pokemon_dex *iterador =(pokemon_dex*)malloc(sizeof(pokemon_dex));
-    if(L == NULL) {
-        printf("No existe ningun pokemon de la region %s\n",region);
-        return;
-    }
-    iterador = first(L);
-    while (iterador!=NULL) {
-        printf("%s ",iterador->nombre);
-        printf("%d ",iterador->almacenados);
-        printf("%s ", iterador->tipos[0]);
-        if(iterador->tipos[1] != NULL){
-          printf("%s ",iterador->tipos[1]);
-        }
-        printf("%s ",iterador->previa);
-        printf("%s ",iterador->posterior);
-        printf("%d ",iterador->numero);
-        printf("%s ",iterador->region);
-        printf("\n");
-        total=total+iterador->almacenados;
-        iterador=next(L);       
-    }
-    printf("Pokemons totales de la region %s: %d\n",region,total);*/
     char region[40];
     pokemon_dex *aux =(pokemon_dex*)malloc(sizeof(pokemon_dex));
     int total=0;
