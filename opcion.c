@@ -628,15 +628,15 @@ void opcion_9 (HashMap *MapaNombre,HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
       while(iterador2!=NULL) {
         if(guardado2->numero==iterador2->numero) {
           pop_current(L);
-          if(listCount(searchMap(MapaTipo,iterador2->tipos[0]))==0){
-            eraseMap(MapaTipo,iterador2->tipos[0]);
+          if(listCount(searchMap(MapaRegion,guardado2->region))==0){
+            eraseMap(MapaRegion,guardado2->region);
           }
           break;
         }
         iterador2=next(L);
-      }*/
+      }
       int a;
-      return;            
+      return;*/            
     }else {
       printf("Ese id no se encuentra");
     }
