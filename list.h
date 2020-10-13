@@ -19,7 +19,8 @@ void pop_current(List* L);
 
 int is_empty(List* L);
 
-int size(List* L);
+//int size(List* L);
+long listCount(List* L);
 
 void* first(List* L);
 
