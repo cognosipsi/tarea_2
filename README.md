@@ -32,3 +32,6 @@ Problemas:
   -En List la funcion para medir el tamaño era distinto tanto en .c como en .h.
   -Poder realizar los commits y pull en Repl.it y GitHub de manera efectiva.
   -Debido a la cantidad de mapas a modificar en la opcion 9 y que se realizo en una sentada, hubieron dificultades para que corriera como corresponde.
+
+  Link a Repl.it:
+  https://repl.it/@cognosipsi/tarea2#README.md
