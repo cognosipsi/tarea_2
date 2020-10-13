@@ -30,6 +30,7 @@ int higher_than_int(void* key1, void* key2){
 }
 int main (void) {
   int op;
+  int op2;
   int id;
   HashMap *MapaNombre=createMap(100);
   HashMap *MapaTipo=createMap(100);
@@ -40,7 +41,7 @@ int main (void) {
   TreeMap *ArbolPs=createTreeMap(higher_than_int);
   while (op != 11) {
       /* MENU */ 
-        printf("1.- Importar/Exportar desde un archivo CSV\n");              
+        printf("1.- Importar/Exportar desde un archivo CSV\n");
         printf("2.- Atrapar pokemon\n");
         printf("3.- Buscar mis pokémon por tipo\n");
         printf("4.- Buscar mis pokémon por nombre\n");
@@ -54,18 +55,30 @@ int main (void) {
         printf("\nIndica la opcion: ");
         scanf("%d", &op);
       if (op == 1) {
-          opcion_1(MapaNombre,MapaNombreDex, MapaTipo,ArbolDex,ArbolPc,ArbolPs,MapaRegion); 
+          printf("Seleccione una opcion\n");
+          printf("1.- Importar desde un archivo CSV\n");
+          printf("2.- Exportar hacia un archivo CSV\n");
+          scanf("%d", &op2);
+          if (op2 == 1) {
+              opcion_1(MapaNombre,MapaNombreDex, MapaTipo,ArbolDex,ArbolPc,ArbolPs,MapaRegion);
+          }
+          else {
+              opcion1(MapaNombre, MapaNombreDex);
+          }
       }
       if (op == 2) {
           opcion_2(MapaNombre,MapaNombreDex,MapaTipo,ArbolDex, ArbolPc, ArbolPs, MapaRegion); 
       }
       if (op == 3) {
+          printf("Ingrese el tipo\n");
           opcion_3(MapaTipo);
       }
       if (op == 4) {
+          printf("Ingrese el nombre\n");
           opcion_4(MapaNombre);
       }
       if (op == 5) {
+          printf("Ingrese el nombre\n");
           opcion_5(MapaNombreDex);
       }
       if (op == 6) {
@@ -78,11 +91,12 @@ int main (void) {
           opcion_8(ArbolPs);
       }
       if (op == 9) {
-          printf("escriba id a borrar\n");
+          printf("Ingrese id a borrar\n");
           scanf("%d",&id);
           opcion_9 (MapaNombre,MapaNombreDex,MapaTipo,ArbolDex, ArbolPs,ArbolPc,MapaRegion,id);
       }
       if (op == 10) {
+          printf("Ingrese la region\n");
           opcion_10(MapaRegion);
       }
   }

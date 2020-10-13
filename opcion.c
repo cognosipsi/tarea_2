@@ -73,7 +73,20 @@ char *strdup(const char *str) {
 }
 
 void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,TreeMap *ArbolDex, TreeMap *ArbolPc, TreeMap *ArbolPs, HashMap *MapaRegion) {
-    FILE *fp = fopen ("pokemon Archivo1.csv", "r");
+    int op;
+    printf("seleccione que archivo quiere importar:\n");
+    printf("1.- para pokemon Archivo1.csv\n");
+    printf("2.- para pokemon Archivo2.csv\n");
+    FILE *fp;
+    scanf("%d",&op);
+    if(op==1){
+      fp = fopen ("pokemon Archivo1.csv", "r");
+    }else if(op==2){
+      fp = fopen ("pokemon Archivo2.csv", "r");
+    }else {
+      printf("no es valido\n");
+      return;
+    }
     char linea[1024];
     int i;
     int j;
@@ -195,22 +208,73 @@ void opcion_1(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
       infodex=nextMap(MapaNombreDex);
     }
     ListaNombre=firstMap(MapaRegion);
+    
+}
 
+void opcion1( HashMap *MapaNombre, HashMap *MapaNombreDex){
+  char vec[50];
+  printf("Ingrese nombre del archivo \n");
+  scanf("%s", vec);
+  fflush(stdin);
+  fflush(stdin);
+  strcat(vec, ".csv");
+  FILE * fp = fopen(vec, "w");
+  List * listapoke= firstMap(MapaNombre);
+  char c='"';
+  while(listapoke != NULL){
+      pokemon * poke = first(listapoke);
+      pokemon_dex * pokedex = searchMap(MapaNombreDex, poke->nombre);
+      while(poke != NULL){
+          fprintf(fp, "%d,%s,", poke->id,pokedex->nombre);
+          
+
+
+          /*char * tipos = first(pokedex->tipos);
+          if( (tipos != NULL ) && ( next(pokedex->tipos) != NULL ) ){
+              prev(pokedex->tipos);
+              fprintf(fp,"%c",c);      //tripledoblecomilla
+              while(tipos != NULL){     // tipos[1] tipos[0] 
+                  if(next(pokedex->tipos) != NULL){
+                      prev(pokedex->tipos);
+                      fprintf(fp, "%s, ", tipos);
+                  }
+                  else{
+                      fprintf(fp, "%s", tipos);
+                  }
+                  tipo = next(pokedex->tipos);
+              }
+              fprintf(fp,"%c",c);    // skjdfjksdjfksdfjk         
+          }
+          else{
+              fprintf(fp, "%s", tipo);
+          }*/
+          if(isalpha(pokedex->tipos[1][0])!=0) fprintf(fp,"%c",c);
+          fprintf(fp, "%s", pokedex->tipos[0]);
+          if(isalpha(pokedex->tipos[1][0])!=0) {
+            fprintf(fp, ",%s", pokedex->tipos[1]);
+            fprintf(fp,"%c",c);
+          }
+          fprintf(fp, ",%d,%d,%s,%s,%s,%s\n", poke->pc,poke->ps,poke->sexo,pokedex->previa, pokedex->posterior, pokedex->region);
+          poke = next(listapoke);
+      }
+      listapoke = nextMap(MapaNombre);
+  }
+  fclose(fp);
+  system("pause");
+  system("cls");
 }
 
 void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,TreeMap *ArbolDex, TreeMap *ArbolPc, TreeMap *ArbolPs, HashMap *MapaRegion){
-    char *nombre = (char *) malloc (40 * sizeof(char));
+    char nombre[40];
     int n;
-    List *tipos = create_list();
-    char *tipo;
+    char tipos[2][40];
     int PC;
     int PS;
-    char *sexo = (char *) malloc (10 * sizeof(char));
-    char *previa = (char *) malloc (40 * sizeof(char));
-    char *posterior = (char *) malloc (40 * sizeof(char));
+    char sexo[10];
+    char previa[40];
+    char posterior[40];
     int numero;
-    char *region = (char *) malloc (40 * sizeof(char));
-    int i;
+    char region[40];
     List *L;
     pokemon_dex *comprobardex;
     pokemon *pkm = (pokemon *) malloc(sizeof(pokemon));
@@ -220,55 +284,48 @@ void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
     pkm->id=identificacion;
 
     printf("Ingrese nombre\n");
-    scanf("%[^\n]s", nombre);
+    scanf("%s", nombre);
     strcpy(pkm->nombre, nombre);
     strcpy(dex->nombre, nombre);
-    fflush(stdin);
 
     printf("Ingrese cantidad de tipos\n");
     scanf("%d", &n);
+    printf("Ingrese un tipo\n");
+    scanf("%s", tipos[0]);
+    strcpy(dex->tipos[0], tipos[0]);
 
-    for (i = 0 ; i < n ; i++) {
-        tipo = (char *) malloc (40 * sizeof(char));
+    if (n == 2) {
         printf("Ingrese un tipo\n");
-        scanf("%[^\n]s", tipo);
-        fflush(stdin);
-        push_back(tipos, tipo);
+        scanf("%s", tipos[1]);
+        strcpy(dex->tipos[1], tipos[1]);
     }
     
     printf("Ingrese PC\n");  //Se guardan los datos del pokemon
     scanf("%d", &PC);
-    fflush(stdin);
     pkm->pc = PC;
 
     printf("Ingrese PS\n");
     scanf("%d", &PS);
-    fflush(stdin);
     pkm->ps = PS;
 
     printf("Ingrese sexo\n");
-    scanf("%[^\n]s", sexo);
-    fflush(stdin);
+    scanf("%s", sexo);
     strcpy(pkm->sexo, sexo);
     
     printf("Ingrese evolucion previa\n");
-    scanf("%[^\n]s", previa);
-    fflush(stdin);
+    scanf("%s", previa);
     strcpy(dex->previa, previa);
     
     printf("Ingrese evolucion posterior\n");
-    scanf("%[^\n]s", posterior);
-    fflush(stdin);
+    scanf("%s", posterior);
     strcpy(dex->posterior, posterior);
 
     printf("Ingrese numero de la pokedex\n");
     scanf("%d", &numero);
-    fflush(stdin);
     dex->numero = numero;
     
     printf("Ingrese region\n");
-    scanf("%[^\n]s", region);
-    fflush(stdin);
+    scanf("%s", region);
     strcpy(dex->region, region);
     
     if (searchMap(MapaNombre, nombre) == NULL) {
@@ -347,6 +404,7 @@ void opcion_2(HashMap *MapaNombre, HashMap *MapaNombreDex, HashMap *MapaTipo,Tre
 
 void opcion_3(HashMap *MapaTipo){//busca pokemones de tipo especifico
     char tipo[40];
+    printf("ingrese tipo\n");
     scanf("%s", tipo);
     List *L=searchMap(MapaTipo, tipo);//se busca si el tipo existe
     if(L == NULL) {
@@ -367,6 +425,7 @@ void opcion_3(HashMap *MapaTipo){//busca pokemones de tipo especifico
 
 void opcion_4(HashMap *MapaNombre){//busca pokemones de nombre especifico
     char nombre[40];
+    printf("Ingrese nombre\n");
     scanf("%s", nombre);
     List *L=searchMap(MapaNombre, nombre); //se busca si el nombre existe
     if(L == NULL) {
